@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import {Plaster} from 'next/font/google';
 import localFont from 'next/font/local';
-import { AnimatePresence, motion, progress, useAnimationFrame, useMotionValue, useMotionValueEvent, useScroll, useSpring, useTransform, useVelocity, wrap } from 'framer-motion';
+import { AnimatePresence, delay, motion, progress, useAnimationFrame, useMotionValue, useMotionValueEvent, useScroll, useSpring, useTransform, useVelocity, wrap } from 'framer-motion';
 import { use, useEffect, useRef, useState } from 'react';
 
 type ParallaxTextTypes = {
@@ -10,6 +10,7 @@ type ParallaxTextTypes = {
     style?: any;
     baseVelocity?: number;
     exit?: boolean;
+    transitionParams?: Object;
 }
 
 const porterSansBlock = localFont({
@@ -21,7 +22,11 @@ const plaster = Plaster({
     subsets: ['latin'],
 });
 
-const ParallaxText = ({ children, className, style, baseVelocity=5, exit = false } : ParallaxTextTypes) => {
+const ParallaxText = ({ children, className, style, baseVelocity=5, exit = false, transitionParams = {
+    duration: 0.75,
+    ease: 'circInOut',
+    delay: 0,
+}} : ParallaxTextTypes) => {
     const [ready, setReady] = useState(false);
 
     const baseX = useMotionValue(0);
@@ -70,13 +75,14 @@ const ParallaxText = ({ children, className, style, baseVelocity=5, exit = false
                 animate = {exit ? {
                     x: [x.get(), baseVelocity > 0 ? '25%' : '-100%'],
                     display: 'none',
+                    transition: {
+                        ...transitionParams,
+                        delay: 0,
+                    }
                 } : {
                     x: [baseVelocity > 0 ? '25%' : '-100%', x.get()],
                     display: 'flex',
-                }}
-                transition = {{
-                    duration: 0.75,
-                    ease: 'circInOut',
+                    transition: {...transitionParams},
                 }}
                 onAnimationComplete = {() => {
                     if(!exit) {

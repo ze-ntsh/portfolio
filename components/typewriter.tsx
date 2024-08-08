@@ -7,6 +7,12 @@ type TypewriterTypes = {
 	className?: string | undefined;
 	children?: any;
 	trigger?: boolean;
+	reverse?: boolean;
+	// direction?: number;
+	transitionParams?: {
+		duration?: number;
+		delay?: number;
+	}
 }
 
 const Typewriter = ({
@@ -21,27 +27,24 @@ const Typewriter = ({
 		return children.slice(0, Math.round(value));
 	});
 
-	const [animationComplete, setAnimationComplete] = useState(false);
+	const displayTextReverse = useTransform(count, (value) => {
+		return children.slice(0, children.length-Math.round(value));
+	})
 
 	const [scope, animate] = useAnimate();
 
 	useEffect(() => {
-		if(!trigger) return;
+		if (!trigger) return;
 
 		const controls = animate(count, children.length, {
 			type: 'spring',
 			duration: 3,
 			ease: 'linear',
-			onUpdate: (value) => {
-				if(value == children.length) {
-					setAnimationComplete(true);
-				}
-			},
 		});
 
 		return controls.stop;
 	}, [animate, children.length, count, trigger]);
-
+	
 	return (
 		<motion.span className={className} ref={scope}>
 			{displayText}
