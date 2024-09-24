@@ -10,7 +10,7 @@ export const InitContext = createContext<InitContextType>({initialize: false, se
 export const useInitContext = () => useContext(InitContext);
 
 export const InitProvider = ({children}: Readonly<{children: React.ReactNode}>) => {
-  const [initialize, setInitialize] = useState<boolean>(true);
+  const [initialize, setInitialize] = useState<boolean>(false);
 
   // useEffect(() => {
   //   console.log('Init changed to:', initialize);

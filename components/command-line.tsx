@@ -1,5 +1,5 @@
 import { use, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { m, motion } from 'framer-motion';
 
 import { cn } from '@/lib/utils';
 import { useNavContext } from './context/nav-context';
@@ -9,13 +9,13 @@ import { cascadia } from '@/lib/fonts';
 export const CLI = () => {
 
 	// size
-	const [fullScreen, setFullScreen] = useState(false);
 	const [minimized, setMinimized] = useState(false);
 
 	// text area
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [command, setCommand] = useState('');
 	const [output, setOutput] = useState<string[]>([]);
+	const initializeCommand = 'initialize';
 
 	// file system
 	const [dir, setDir] = useState<string>('');
@@ -27,11 +27,13 @@ export const CLI = () => {
 	// context
 	const { cliVisible, setCLIvisible } = useNavContext();
 	const { initialize, setInitialize } = useInitContext();
-	
+	const [delayInit, setDelayInit] = useState(false);
+
 	// ctrl + ` to toggle
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.key === '`' && e.ctrlKey) {
+				setMinimized(false);
 				setCLIvisible((prev) => !prev);
 			}
 		};
@@ -62,9 +64,12 @@ export const CLI = () => {
 
 	// COMMANDS
 	const commandList: { [key: string]: { action: () => void } } = {
-		'initialize': {
+		[initializeCommand]: {
 			action: () => {
 				setInitialize(true);
+				setTimeout(() => {
+					setDelayInit(true);
+				}, 300);
 			},
 		},
 		'clear': {
@@ -149,31 +154,18 @@ export const CLI = () => {
 		}
 	};
 
+	// INITAL ANIMATION
 	useEffect(() => {
 		let timeoutIds: NodeJS.Timeout[] = [];
 		// INITAL ANIMATION TRIGGER
 		if (!initialize && cliVisible) {
-			let initCommand = 'initialize';
 			// write in input letter by letter
-			initCommand.split('').forEach((letter, index) => {
+			initializeCommand.split('').forEach((letter, index) => {
 				const timeout = setTimeout(() => {
 					setCommand((prev) => prev + letter);
 				}, 100 * index);
 				timeoutIds.push(timeout);
 			});
-
-			// press enter (\n doesnt work)
-			const timeout = setTimeout(() => {
-				// @ts-ignore
-				handleCommand({ key: 'Enter', target: { value: initCommand } } as React.KeyboardEvent<HTMLInputElement>);
-			}, 100 * initCommand.length);
-			timeoutIds.push(timeout);
-
-			// minimize
-			const timeout2 = setTimeout(() => {
-				setMinimized(true);
-			}, 100 * initCommand.length + 500);
-			timeoutIds.push(timeout2);
 		}
 
 		return () => {
@@ -181,20 +173,38 @@ export const CLI = () => {
 		};
 	}, [initialize, cliVisible]);
 
+	// INITAL ANIMATION TRIGGER (ENTER)
+	useEffect(() => {
+		let timeout: NodeJS.Timeout;
+		if (!initialize && command === initializeCommand) {
+			timeout = setTimeout(() => {
+				handleCommand({ key: 'Enter' } as React.KeyboardEvent<HTMLInputElement>);
+			}, 150);
+		}
+
+		return () => {
+			clearTimeout(timeout);
+		};
+	}, [command]);
+
+	// INITAL ANIMATION (OUTPUT / MINIMIZE)
+	useEffect(() => {
+		if (initialize) {
+			const timeout = setTimeout(() => { setMinimized(true) }, 200);
+			setOutput((prev) => [...prev, 'Welcome to Nitish Maindoliya\'s portfolio']);
+
+			return () => {
+				clearTimeout(timeout);
+			};
+		}
+	}, [initialize]);
+
 	const CLIVariants = {
 		minimized: {
 			height: '1.5rem',
 		},
 		show: {
 			height: '45%',
-		},
-		fullScreen: {
-			height: 'calc(100% - 3.2em)',
-		},
-		heightVariantSelector: () => {
-			if (minimized) return 'minimized';
-			if (fullScreen) return 'fullScreen';
-			return 'show';
 		}
 	};
 
@@ -208,14 +218,13 @@ export const CLI = () => {
 				'fixed bottom-0 bg-black z-50 w-full',
 				cascadia.className,
 			)}
-			initial='minimized'
-			animate={CLIVariants.heightVariantSelector()}
 			variants={CLIVariants}
+			initial='minimized'
+			animate={minimized ? 'minimized' : 'show'}
 			transition={{
-				duration: initialize ? 0 : 0.2,
+				duration: delayInit ? 0 : 0.2,
 				ease: 'anticipate',
 			}}
-
 			onClick={() => {
 				inputRef.current?.focus();
 			}}
@@ -227,19 +236,16 @@ export const CLI = () => {
 						onClick={() => {
 							setCLIvisible(false)
 							setMinimized(false)
-							setFullScreen(false)
 						}}
 					></div>
 					<div className='h-3.5 aspect-square bg-yellow-500 rounded-full hover:cursor-pointer'
 						onClick={() => {
-							setFullScreen(false);
 							setMinimized((prev) => !prev);
 						}}
 					></div>
 					<div className='h-3.5 aspect-square bg-green-500 rounded-full hover:cursor-pointer'
 						onClick={() => {
 							setMinimized(false);
-							setFullScreen((prev) => !prev)
 						}}
 					></div>
 				</div>
