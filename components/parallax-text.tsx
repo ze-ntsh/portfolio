@@ -1,6 +1,5 @@
 import { cn } from '@/lib/utils';
-import {Plaster} from 'next/font/google';
-import localFont from 'next/font/local';
+
 import { AnimatePresence, delay, motion, progress, useAnimationFrame, useMotionValue, useMotionValueEvent, useScroll, useSpring, useTransform, useVelocity, wrap } from 'framer-motion';
 import { use, useEffect, useRef, useState } from 'react';
 
@@ -13,16 +12,11 @@ type ParallaxTextTypes = {
     transitionParams?: Object;
 }
 
-const porterSansBlock = localFont({
-    src: '../public/fonts/porter-sans-inline-block.ttf',
-});
+import { porterSansBlock } from '@/lib/fonts';
 
-const plaster = Plaster({
-    weight: '400',
-    subsets: ['latin'],
-});
 
-const ParallaxText = ({ children, className, style, baseVelocity=5, exit = false, transitionParams = {
+
+export const ParallaxText = ({ children, className, style, baseVelocity=5, exit = false, transitionParams = {
     duration: 0.75,
     ease: 'circInOut',
     delay: 0,

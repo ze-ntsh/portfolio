@@ -1,16 +1,15 @@
 import { motion } from 'framer-motion'
 
-import localFont from 'next/font/local';
 import { useState } from 'react';
 import CLI from './command-line';
 import { cn } from '@/lib/utils';
 import { useNavContext } from './context/nav-context';
 import Typewriter from './typewriter';
-const cascadia = localFont({src: '../public/fonts/cascadia.ttf'});
+import { cascadia } from '@/lib/fonts';
 
 const Navbar = () => {
 
-	const { setCLIvisible, route, navActive } = useNavContext();
+	const { setCLIvisible, route } = useNavContext();
 
 	const navbarVariants = {
 		hide: {
@@ -37,7 +36,7 @@ const Navbar = () => {
 				<div className={cn('cursor-pointer w-1/4',cascadia.className)} onClick={() => setCLIvisible((prev: boolean) => !prev)}>&gt;_</div>
 				<div className={cn('text-center font-bold text-[1.8em] w-1/2', cascadia.className)}>
 					nitish.
-					<Typewriter trigger={navActive}>
+					<Typewriter>
 						maindoliya.
 					</Typewriter>
 				</div>

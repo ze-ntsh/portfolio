@@ -1,19 +1,19 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { use, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
-import localFont from 'next/font/local';
 import { cn } from '@/lib/utils';
 import { useNavContext } from './context/nav-context';
 import { useInitContext } from './context/init-context';
-const cascadia = localFont({ src: '../public/fonts/cascadia.ttf' });
+import { cascadia } from '@/lib/fonts';
 
-const CLI = () => {
+export const CLI = () => {
 
 	// size
 	const [fullScreen, setFullScreen] = useState(false);
 	const [minimized, setMinimized] = useState(false);
 
 	// text area
+	const inputRef = useRef<HTMLInputElement>(null);
 	const [command, setCommand] = useState('');
 	const [output, setOutput] = useState<string[]>([]);
 
@@ -27,6 +27,21 @@ const CLI = () => {
 	// context
 	const { cliVisible, setCLIvisible } = useNavContext();
 	const { initialize, setInitialize } = useInitContext();
+	
+	// ctrl + ` to toggle
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === '`' && e.ctrlKey) {
+				setCLIvisible((prev) => !prev);
+			}
+		};
+
+		window.addEventListener('keydown', handleKeyDown);
+
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+		};
+	}, []);
 
 	// FILE SYSTEM
 	const fileSystem = {
@@ -83,12 +98,11 @@ const CLI = () => {
 		// 		}
 		// 	},
 		// },
-	}
+	};
 
 	const handleCommand = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		// enter key
 		if (e.key === 'Enter') {
-			console.log(command);
 			// add to output
 			setOutput((prev) => [...prev, `nitish@nitish:${dir}$ ${command}`]);
 
@@ -201,12 +215,20 @@ const CLI = () => {
 				duration: initialize ? 0 : 0.2,
 				ease: 'anticipate',
 			}}
+
+			onClick={() => {
+				inputRef.current?.focus();
+			}}
 		>
 			{/* control bar */}
 			<div className='bg-gray-200 w-full h-6 flex items-center'>
 				<div className='flex gap-2 ml-2'>
 					<div className='h-3.5 aspect-square bg-red-500 rounded-full hover:cursor-pointer'
-						onClick={() => setCLIvisible(false)}
+						onClick={() => {
+							setCLIvisible(false)
+							setMinimized(false)
+							setFullScreen(false)
+						}}
 					></div>
 					<div className='h-3.5 aspect-square bg-yellow-500 rounded-full hover:cursor-pointer'
 						onClick={() => {
@@ -249,6 +271,7 @@ const CLI = () => {
 						value={command}
 						onChange={(e) => setCommand(e.target.value)}
 						onKeyDown={handleCommand}
+						ref={inputRef}
 						autoFocus
 					/>
 				</div>
@@ -256,5 +279,3 @@ const CLI = () => {
 		</motion.div>
 	);
 }
-
-export default CLI;

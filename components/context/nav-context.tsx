@@ -22,7 +22,7 @@ export const useNavContext = () => useContext(NavContext);
 
 export const NavProvider = ({children}: Readonly<{children: React.ReactNode}>) => {
   const [route, setRoute] = useState('main');
-  const [cliVisible, setCLIvisible] = useState(true);
+  const [cliVisible, setCLIvisible] = useState(false  );
   // const [navActive, setNavActive] = useState(false);
 
   // useEffect(() => {
