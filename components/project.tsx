@@ -77,7 +77,7 @@ export const Project = ({
 			window.scrollTo(0, yBeforeExpand.current);
 			lenis?.start();
 		}
-	}, [expanded, scrollY]);
+	}, [expanded, scrollY, lenis]);
 
 	return (
 		<>

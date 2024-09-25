@@ -1,7 +1,7 @@
 import { cascadia, righteous } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import { contact } from "@/actions/contactEmail";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import * as z from 'zod';
 
@@ -49,7 +49,7 @@ const ContactFormStageStepper = ({ stage, formData, setFormData }: ContactFormSt
     case 2:
       return (
         <div className="flex flex-col gap-2">
-          <div className="text-2xl" >Let's talk</div>
+          <div className="text-2xl" >Let&apos;s talk</div>
           <textarea
             className={cn("text-xl outline-none border-b-[--background] border-b-2 leading-snug", righteous.className)}
             placeholder="Hey, I wanted to talk about..."
@@ -66,7 +66,7 @@ const ContactFormStageStepper = ({ stage, formData, setFormData }: ContactFormSt
       return (
         <div className="flex flex-col gap-2">
           <div className="text-2xl">Thanks for reaching out</div>
-          <div className="text-xl">I'll get back to you soon</div>
+          <div className="text-xl">I&apos;ll get back to you soon</div>
         </div>
       );
   }
@@ -83,11 +83,11 @@ export const ContactForm = () => {
   // 2: Message
   // 3: Success
 
-  const schemas = [
+  const schemas = useMemo(() => ([
     z.string().min(1, 'Cmon, I know you have a name'),
     z.string().email('You wanna hear from me, right?').max(50, 'Didn\'t know emails could be that long'),
     z.string().min(15, 'You can do better than that').max(500, 'Let\'s keep it a bit shorter')
-  ];
+  ]), []);
 
   useEffect(() => {
     // Validate on formdata change
@@ -107,7 +107,7 @@ export const ContactForm = () => {
     } else {
       setError('');
     }
-  }, [formData]);
+  }, [error, formData, schemas, stage]);
 
   useEffect(() => {
     setError('');
