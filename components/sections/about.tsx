@@ -9,9 +9,51 @@ import { ExternalLink, Github, LinkedinIcon } from "lucide-react";
 import { Button } from "@/components/button";
 
 import { fileSystem } from "@/lib/file-system";
+import { useLayoutEffect, useMemo, useRef } from "react";
+import { ParticleSystem, TimelineObject, Config, Interactivity} from '@/lib/particlize';
 
 export const About = () => {
   const { setRoute } = useNavContext();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const timeline: TimelineObject[] = useMemo(() => ([  
+    {
+      type: 'image',
+      content: '/images/nitish.webp',
+      config: {
+        background: 'white',
+        transition: 'converge',
+        duration: 1000,
+        scale: 1.2,
+        particles: {
+          size: 1.2,
+          color: 'white',
+          density: 150,
+        },
+      }
+    },
+  ]), []);
+
+  const interactivity: Interactivity = useMemo(() => ({
+    click: {
+      mode: 'grab',
+    },
+    hover: {
+      mode: 'repulse',
+    } 
+  }), []);
+
+  useLayoutEffect(() => {
+    if (!canvasRef.current) return;
+
+    canvasRef.current.style.width ='100%';
+    canvasRef.current.style.height='100%';
+    // ...then set the internal size to match
+    canvasRef.current.width  = canvasRef.current.offsetWidth;
+    canvasRef.current.height = canvasRef.current.offsetHeight;
+    const system = new ParticleSystem(canvasRef.current as HTMLCanvasElement, timeline, interactivity);
+    system.init();
+  }, [interactivity, timeline]);
 
   return (
     <motion.section className='bg-[--background] absolute bottom-0 min-h-[100vh] lg:h-[100vh] pb-10 w-full snap'>
@@ -22,7 +64,7 @@ export const About = () => {
           </div>
 
           <div className='h-2/3 flex justify-center max-lg:justify-start max-lg:px-10'>
-            <div className='w-full aspect-square bg-[rgba(255,255,255,0.8)]'
+            <div className='w-full aspect-square rounded-b-[100%] overflow-hidden'
             // style={{
             //   backgroundImage: 'url(/images/nitish.png)',
             //   backgroundSize: 'cover',
@@ -31,6 +73,7 @@ export const About = () => {
             // }}
             >
               {/* PARTICLE PIC */}
+              <canvas id='test' ref={canvasRef} ></canvas>
             </div>
           </div>
         </div>

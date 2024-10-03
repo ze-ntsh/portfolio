@@ -1,11 +1,12 @@
-import { use, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { m, motion, progress, useMotionValueEvent, useScroll, useSpring, useTransform } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { motion, useMotionValueEvent, useScroll, useTransform } from 'framer-motion';
 
 import { cn } from '@/lib/utils';
 import { useNavContext } from './context/nav-context';
 import { useInitContext } from './context/init-context';
 import { cascadia } from '@/lib/fonts';
-import { randomInt, randomUUID } from 'crypto';
+
+import { fileSystem } from '@/lib/file-system';
 
 export const CLI = () => {
 
@@ -16,6 +17,10 @@ export const CLI = () => {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [command, setCommand] = useState('');
 	const [output, setOutput] = useState<string[]>([]);
+	const cout = (text: string[] | string) => {
+		setOutput((prev) => [...prev, ...(Array.isArray(text) ? text : [text])]);
+	};
+
 	const initializeCommand = 'initialize';
 
 	// file system
@@ -50,78 +55,61 @@ export const CLI = () => {
 		};
 	}, [setCLIvisible, minimized, cliVisible]);
 
-	// FILE SYSTEM
-	const fileSystem = {
-		'home': {},
-		'about.txt': 'This is about me',
-		'projects': {
-			'project-1': {
-				'info.txt': 'This is project 1',
-			},
-			'project-2': {
-				'info.txt': 'This is project 2',
-			},
-			'project-3': {
-				'info.txt': 'This is project 3',
-			},
-		},
-	};
-
 	// COMMANDS
-	const commandList: { [key: string]: { action: () => void, description?: string } } = {
+	const commandList: { [key: string]: { action: (args: string[]) => void, description?: string } } = {
 		[initializeCommand]: {
-			action: () => {
+			action: (args: string[]) => {
 				setInitialize(true);
-				setOutput((prev) => [...prev, 'Welcome to Nitish Maindoliya\'s portfolio']);
-				setOutput((prev) => [...prev, 'Type help to list all commands']);
+				cout('Welcome to Nitish Maindoliya\'s portfolio');
+				cout('Type help to list all commands');
 			},
 			description: 'Initialize the portfolio',
 		},
 		'clear': {
-			action: () => {
+			action: (args: string[]) => {
 				setOutput([]);
 			},
 			description: 'Clear the terminal',
 		},
 		'help': {
-			action: () => {
-				setOutput((prev) => [...prev, ...Object.keys(commandList).map((key) => `${key} - ${commandList[key].description}`)]);
+			action: (args: string[]) => {
+				cout(Object.keys(commandList).map((key) => `${key} - ${commandList[key].description}`));
 			},
 			description: 'List all commands',
 		},
-		// 'ls': {
-		// 	action: () => {
-		// 		const path = dir.split('/').filter((p) => p);
-		// 		let current = fileSystem;
-		// 		path.forEach((p) => {
-		// 			current = current[p];
-		// 		});
-		// 		setOutput((prev) => [...prev, ...Object.keys(current)]);
-		// 	},
-		// },
-		// 'cd': {
-		// 	action: () => {
-		// 		const path = command.split(' ')[1];
-		// 		if (path === '..') {
-		// 			const pathSplit = dir.split('/');
-		// 			pathSplit.pop();
-		// 			setDir(pathSplit.join('/'));
-
-		// 			// @ts-ignore
-		// 		} else if (fileSystem[path]) {
-		// 			setDir((prev) => `${prev}/${path}`);
-		// 		} else {
-		// 			setOutput((prev) => [...prev, `${path}: No such file or directory`]);
-		// 		}
-		// 	},
-		// },
+		'ls': {
+			action: (args: string[]) => {
+				if (!dir) {
+					cout(Object.keys(fileSystem).join(' '));
+				} else {
+					const currentDir = fileSystem[dir];
+					if (currentDir) {
+						cout(Object.keys(currentDir).join(' '));
+					} else {
+						cout('ls: No such file or directory');
+					}
+				}
+			},
+			description: 'List all directories',
+		},
+		'cd': {
+			action: (args: string[]) => {
+				if (args[0] in fileSystem) {
+					setDir(args[0]);
+					cout(`Changed directory to ${args[0]}`);
+				} else {
+					cout(`cd: ${args[0]}: No such file or directory`);
+				}
+			},
+			description: 'Change directory',
+		},
 	};
 
 	const handleCommand = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		// enter key
 		if (e.key === 'Enter') {
 			// add to output
-			setOutput((prev) => [...prev, `nitish@nitish:${dir}$ ${command}`]);
+			cout(`nitish@nitish:${dir}$ ${command}`);
 
 			// check if command is empty
 			if (!command) return;
@@ -133,11 +121,12 @@ export const CLI = () => {
 			}
 
 			// execute command
-			if (commandList[command.split(' ')[0]]) {
-				commandList[command.split(' ')[0]].action();
+			const args = command.split(' ');
+			if (args[0] in commandList) {
+				commandList[args[0]].action(args.slice(1));
 			} else {
 				// invalid command
-				setOutput((prev) => [...prev, `${command}: command not found`]);
+				cout(`${command}: command not found`);
 			}
 
 			// clear input

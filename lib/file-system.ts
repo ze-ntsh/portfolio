@@ -1,4 +1,27 @@
-export const fileSystem = {
+type FileSystem = {
+  about: {
+    description: string[];
+  };
+  projects: {
+    [key: string]: {
+      description: string[];
+      stack: string[];
+      images: {
+        src: string;
+        desc: string[];
+        alt: string;
+      }[];
+      link: string;
+      timespan: number;
+    };
+  };
+  contact: {
+    email: string;
+    [key: string]: any;
+  };
+};
+
+export const fileSystem: FileSystem = {
   about: {
     description: [
       "I'm a full-stack developer passionate about building both visually appealing and functional applications. I have experience with TypeScript, Next.js, and C++, along with cloud platforms such as GCP and AWS, which has allowed me to develop and deploy scalable solutions.",
