@@ -213,7 +213,7 @@ export const Project = ({
 											{image.desc && image.desc.length > 0 &&
 												<div className="text-[--text-secondary] w-2/5 max-sm:w-full max-sm:first:block h-full flex flex-col justify-center max-sm:hidden">
 													{image.desc.map((desc, index) => (
-														<p key={index} className="mb-5 max-sm:hidden">
+														<p key={index+'img'} className="mb-5 max-sm:hidden">
 															{desc}
 														</p>
 													))}

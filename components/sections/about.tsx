@@ -13,23 +13,29 @@ import { fileSystem } from "@/lib/file-system";
 export const About = () => {
   const { setRoute } = useNavContext();
 
-
   return (
-    <motion.section className='bg-[--background] absolute bottom-0 h-[100vh] pb-10 w-full snap'>
-      <div className='w-full h-full flex max-sm:flex-col'>
-        <div className='w-2/5 h-full flex flex-col justify-evenly max-sm:w-full'>
-          <div className={cn('text-[3.5em] text-[--text-primary] text-center max-sm:text-[2em]', porterSansBlock.className)}>
+    <motion.section className='bg-[--background] absolute bottom-0 min-h-[100vh] lg:h-[100vh] pb-10 w-full snap'>
+      <div className='w-full h-full flex max-lg:flex-col'>
+        <div className='w-2/5 h-full flex flex-col justify-evenly max-lg:w-full'>
+          <div className={cn('text-[3.5em] text-[--text-primary] text-center max-lg:text-[2em] max-lg:py-5', porterSansBlock.className)}>
             &gt;_whoami
           </div>
 
-          <div className='h-2/3 flex justify-center max-sm:justify-start max-sm:px-10'>
-            <div className='w-full aspect-square bg-[rgba(255,255,255,0.8)]'>
+          <div className='h-2/3 flex justify-center max-lg:justify-start max-lg:px-10'>
+            <div className='w-full aspect-square bg-[rgba(255,255,255,0.8)]'
+              // style={{
+              //   backgroundImage: 'url(/images/nitish.png)',
+              //   backgroundSize: 'cover',
+              //   backgroundPosition: 'center',
+              //   backgroundRepeat: 'no-repeat',
+              // }}
+            >
               {/* PARTICLE PIC */}
             </div>
           </div>
         </div>
 
-        <div className='w-3/5 h-full text-[--text-primary] flex flex-col justify-center px-10 max-sm:w-full'>
+        <div className='w-3/5 h-full text-[--text-primary] flex flex-col justify-center px-10 max-lg:w-full'>
           <div>
             <h1 className={cn('text-[2.5em] font-bold', cascadia.className)}>I&apos;m Nitish Maindoliya</h1>
             <h2 className={cn('text-[1.5em] italic font-extralight',)}>Innovating solutions, one project a time</h2>
@@ -54,15 +60,18 @@ export const About = () => {
               Get in touch
             </Button>
             <Button
-              onClick={() => {
-                window.open('/resume.pdf', '_blank');
-              }}
-              className="flex items-center gap-2"
+              onClick={() => {}}
             >
-              Resume <ExternalLink size={20} />
+              <a className="flex items-center gap-2"
+                href="/resume.pdf" 
+                target="_blank" 
+                rel="noreferrer"
+              >
+                Resume <ExternalLink size={20} />
+              </a>
             </Button>
-            <Button 
-              onClick={() => { 
+            <Button
+              onClick={() => {
                 window.open('https://www.linkedin.com/in/nmaindoliya/', '_blank');
               }}
               hoverStyle={{
@@ -71,7 +80,7 @@ export const About = () => {
             >
               <LinkedinIcon size={20} />
             </Button>
-            <Button 
+            <Button
               onClick={() => {
                 window.open('https://github.com/ze-ntsh', '_blank');
               }}
