@@ -79,16 +79,16 @@ export const CLI = () => {
 		},
 		'ls': {
 			action: (args: string[]) => {
-				if (!dir) {
-					cout(Object.keys(fileSystem).join(' '));
-				} else {
-					const currentDir = fileSystem[dir];
-					if (currentDir) {
-						cout(Object.keys(currentDir).join(' '));
-					} else {
-						cout('ls: No such file or directory');
-					}
-				}
+				// if (!dir) {
+				// 	cout(Object.keys(fileSystem).join(' '));
+				// } else {
+				// 	const currentDir = fileSystem[dir];
+				// 	if (currentDir) {
+				// 		cout(Object.keys(currentDir).join(' '));
+				// 	} else {
+				// 		cout('ls: No such file or directory');
+				// 	}
+				// }
 			},
 			description: 'List all directories',
 		},
