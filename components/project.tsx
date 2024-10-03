@@ -29,6 +29,8 @@ export const Project = ({
 		desc: [],
 		alt: 'image',
 	}],
+	link = '',
+	timespan = 2024,
 }) => {
 
 	const [elementInView, setElementInView] = useState(false);
@@ -49,6 +51,7 @@ export const Project = ({
 	});
 
 	const toggleExpanded = () => {
+		if (images.length === 0) return;
 		setExpanded((prev) => !prev);
 	}
 
@@ -107,7 +110,7 @@ export const Project = ({
 									</Typewriter>
 								</span>
 								<div className="text-[--text-primary] text-2xl mr-4 italic font-light">
-									2024
+									{timespan}
 								</div>
 							</div>
 						</div>
@@ -155,7 +158,7 @@ export const Project = ({
 								>
 									<span className="font-bold">Tech used: </span>
 									{stack.map((tech, index) => (
-										<>{tech + " "}</>
+										<>{tech + (index === stack.length - 1 ? " " : ", ")}</>
 									))}
 								</motion.div>
 							</div>
@@ -164,12 +167,19 @@ export const Project = ({
 						<div className="w-1/4 max-sm:w-full text-[--text-primary]">
 							<div className="w-full h-full flex flex-col max-sm:flex-row">
 								<div className="h-1/2 grid place-items-center max-sm:w-1/2">
-									<span className="hover:text-[--text-inverse] hover:bg-white hover:cursor-pointer" onClick={toggleExpanded}>
+									<span className={cn("hover:text-[--text-inverse] hover:bg-white", images.length === 0 ? 'cursor-not-allowed' : 'cursor-pointer')}
+										onClick={toggleExpanded}
+										title={images.length === 0 ? 'Coming soon!' : 'Expand gallery'}
+									>
 										gallery &lt;-
 									</span>
 								</div>
 								<motion.div className="h-1/2 grid place-items-center max-sm:w-1/2">
-									<span className="hover:text-[--text-inverse] hover:bg-white hover:cursor-pointer">
+									<span className="hover:text-[--text-inverse] hover:bg-white hover:cursor-pointer"
+										onClick={() => {
+											window.open(link, '_blank');
+										}}
+									>
 										visit -&gt;
 									</span>
 								</motion.div>

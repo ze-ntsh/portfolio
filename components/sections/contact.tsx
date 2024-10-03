@@ -13,7 +13,7 @@ export const Contact = () => {
       <>
         {/* left-right */}
         <div className="absolute top-0 h-full w-full overflow-hidden max-sm:hidden contact-section-scroll">
-          {Array.from({ length: 50 }).map((val, index) => {
+          {Array.from({ length: 40 }).map((val, index) => {
             return <Cube key={index} className={`absolute`}
               size={Math.random() * 3 + 2}
               style={{
@@ -22,7 +22,7 @@ export const Contact = () => {
               }} />
           })}
 
-          {Array.from({ length: 50 }).map((val, index) => {
+          {Array.from({ length: 40 }).map((val, index) => {
             return <Cube key={index} className={`absolute`}
               size={Math.random() * 3 + 2}
               style={{
@@ -34,7 +34,7 @@ export const Contact = () => {
         
         {/* bottom-mobile */}
         <div className="absolute top-0 h-full w-full overflow-hidden sm:hidden">
-          {Array.from({ length: 50 }).map((val, index) => {
+          {Array.from({ length: 30 }).map((val, index) => {
             return <Cube key={index} className={`absolute`}
               size={Math.random() * 3 + 2}
               style={{

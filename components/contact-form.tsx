@@ -91,6 +91,8 @@ export const ContactForm = () => {
 
   useEffect(() => {
     // Validate on formdata change
+    if (stage == 3) return;
+    
     const schema = schemas[stage];
     const result = schema.safeParse(formData[stage]);
     if (stage == 2) {
@@ -188,7 +190,7 @@ export const ContactForm = () => {
         </div>
       </div>
 
-      <div className="bg-[--foreground] w-full h-[15%]">Hate forms? Connect at <br /> <a href="mailto:nitishmaindoliya@gmail.com">nitishmaindoliya@gmail.com</a></div>
+      <div className="bg-[--foreground] w-full h-[15%]">Hate forms? Connect at <br /> <a href="mailto:nitish@nitish.info">nitish@nitish.info</a></div>
     </div>
   )
 };

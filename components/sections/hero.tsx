@@ -11,15 +11,6 @@ import { cascadia } from '@/lib/fonts';
 import { righteous } from '@/lib/fonts';
 import { About } from './about';
 
-/**
- * Represents the HeroSection component.
- * 
- * @component
- * @param {Object} props - The component props.
- * @param {RefObject} props.snapRef - The reference to the snap element.
- * @returns {JSX.Element} The rendered HeroSection component.
- */
-
 export const HeroSection = () => {
 	// animation refs
 	const targetRef = useRef(null);

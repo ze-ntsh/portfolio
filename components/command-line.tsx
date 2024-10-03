@@ -1,10 +1,11 @@
 import { use, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { m, motion } from 'framer-motion';
+import { m, motion, progress, useMotionValueEvent, useScroll, useSpring, useTransform } from 'framer-motion';
 
 import { cn } from '@/lib/utils';
 import { useNavContext } from './context/nav-context';
 import { useInitContext } from './context/init-context';
 import { cascadia } from '@/lib/fonts';
+import { randomInt, randomUUID } from 'crypto';
 
 export const CLI = () => {
 
@@ -33,8 +34,12 @@ export const CLI = () => {
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.key === '`' && e.ctrlKey) {
-				setMinimized(false);
-				setCLIvisible((prev) => !prev);
+				if (!cliVisible) {
+					setMinimized(false);
+					setCLIvisible(true);
+				} else {
+					setMinimized((prev) => !prev);
+				}
 			}
 		};
 
@@ -43,7 +48,7 @@ export const CLI = () => {
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown);
 		};
-	}, []);
+	}, [setCLIvisible, minimized, cliVisible]);
 
 	// FILE SYSTEM
 	const fileSystem = {
@@ -63,19 +68,26 @@ export const CLI = () => {
 	};
 
 	// COMMANDS
-	const commandList: { [key: string]: { action: () => void } } = {
+	const commandList: { [key: string]: { action: () => void, description?: string } } = {
 		[initializeCommand]: {
 			action: () => {
 				setInitialize(true);
-				setTimeout(() => {
-					setDelayInit(true);
-				}, 300);
+				setOutput((prev) => [...prev, 'Welcome to Nitish Maindoliya\'s portfolio']);
+				setOutput((prev) => [...prev, 'Type help to list all commands']);
 			},
+			description: 'Initialize the portfolio',
 		},
 		'clear': {
 			action: () => {
 				setOutput([]);
 			},
+			description: 'Clear the terminal',
+		},
+		'help': {
+			action: () => {
+				setOutput((prev) => [...prev, ...Object.keys(commandList).map((key) => `${key} - ${commandList[key].description}`)]);
+			},
+			description: 'List all commands',
 		},
 		// 'ls': {
 		// 	action: () => {
@@ -185,13 +197,12 @@ export const CLI = () => {
 		return () => {
 			clearTimeout(timeout);
 		};
-	}, [command]);
+	}, [command, initialize]);
 
 	// INITAL ANIMATION (OUTPUT / MINIMIZE)
 	useEffect(() => {
 		if (initialize) {
 			const timeout = setTimeout(() => { setMinimized(true) }, 200);
-			setOutput((prev) => [...prev, 'Welcome to Nitish Maindoliya\'s portfolio']);
 
 			return () => {
 				clearTimeout(timeout);
@@ -207,6 +218,18 @@ export const CLI = () => {
 			height: '45%',
 		}
 	};
+
+	const { scrollYProgress } = useScroll();
+
+	const [scrollBarWidth, setScrollBarWidth] = useState(0);
+	const remToPx = (rem: number) => rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+
+	const progress = useTransform(scrollYProgress, [0, 1], [-2, 102]);
+
+	useMotionValueEvent(scrollYProgress, 'change', (progress) => {
+		const elments = (Math.trunc(progress * window.innerWidth / remToPx(0.75)) - 1);
+		setScrollBarWidth(elments < 0 ? 0 : elments);
+	});
 
 	if (!cliVisible) {
 		return null;
@@ -230,7 +253,11 @@ export const CLI = () => {
 			}}
 		>
 			{/* control bar */}
-			<div className='bg-gray-200 w-full h-6 flex items-center'>
+			<motion.div className='bg-gray-200 w-full h-6 flex items-center'
+				style={{
+					backgroundImage: `linear-gradient(to right, #c6e0c5 0%, #c6e0c5 ${progress.get()}%, rgb(229 231 235) ${progress.get()}%,  rgb(229 231 235) 100% )`,
+				}}
+			>
 				<div className='flex gap-2 ml-2'>
 					<div className='h-3.5 aspect-square bg-red-500 rounded-full hover:cursor-pointer'
 						onClick={() => {
@@ -249,7 +276,23 @@ export const CLI = () => {
 						}}
 					></div>
 				</div>
-			</div>
+
+				<div className='w-full text-center'>
+					--terminal--
+				</div>
+
+				<div className='flex gap-2 mr-2 invisible'>
+					<div className='h-3.5 aspect-square'></div>
+					<div className='h-3.5 aspect-square'></div>
+					<div className='h-3.5 aspect-square'></div>
+				</div>
+			</motion.div>
+
+			{/* <div className='h-6 flex items-center gap-1'>
+				{Array(scrollBarWidth).fill(0).map((_, index) => (
+					<div className='h-4 w-2 bg-white' key={index}></div>
+				))}
+			</div> */}
 
 			{/* text area */}
 

@@ -4,10 +4,15 @@ import { motion } from 'framer-motion'
 import { porterSansBlock } from '@/lib/fonts';
 import { cascadia } from "@/lib/fonts";
 
-import { useNavContext } from "../context/nav-context";
+import { useNavContext } from "@/components/context/nav-context";
+import { ExternalLink, Github, LinkedinIcon } from "lucide-react";
+import { Button } from "@/components/button";
+
+import { fileSystem } from "@/lib/file-system";
 
 export const About = () => {
-  const {setRoute} = useNavContext();
+  const { setRoute } = useNavContext();
+
 
   return (
     <motion.section className='bg-[--background] absolute bottom-0 h-[100vh] pb-10 w-full snap'>
@@ -27,26 +32,55 @@ export const About = () => {
         <div className='w-3/5 h-full text-[--text-primary] flex flex-col justify-center px-10 max-sm:w-full'>
           <div>
             <h1 className={cn('text-[2.5em] font-bold', cascadia.className)}>I&apos;m Nitish Maindoliya</h1>
-            <h2 className='text-[1.5em] font-bold'>and I develop... everything.</h2>
+            <h2 className={cn('text-[1.5em] italic font-extralight',)}>Innovating solutions, one project a time</h2>
           </div>
           {
-            [...Array(1)].map((_, i) => (
-              <p key={i} className={cn('text-[1em] py-1 font-mono text-[--text-secondary]')}> Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sequi quos nisi quidem quod reprehenderit facere impedit minima officiis sapiente, accusamus eveniet voluptatem modi veritatis quas deleniti labore sunt voluptate quia. </p>
+            fileSystem.about.description.map((desc, index) => (
+              <p key={index} className={cn('text-[1em] mt-2', cascadia.className)}>
+                {desc}
+              </p>
             ))
           }
 
-          <div className='flex mt-[2em]'>
-            <motion.button className={cn('bg-[--foreground] text-[--text-inverse] px-4 py-2', cascadia.className)}
-              whileHover={{
-                background: 'gray',
-                color: 'var(--text-primary)',
-                boxShadow: '3px 3px 0 var(--text-primary)',
-              }}
+          <div className='flex mt-[2em] gap-2'>
+            <Button
               onClick={() => {
-                document.getElementsByClassName('contact-section-scroll')[0].scrollIntoView({ behavior: 'smooth' })
+                window.scrollTo({
+                  top: document.body.scrollHeight,
+                  behavior: 'smooth'
+                });
               }}
-            >Get in touch
-            </motion.button>
+            >
+              Get in touch
+            </Button>
+            <Button
+              onClick={() => {
+                // setRoute('resume');
+              }}
+              className="flex items-center gap-2"
+            >
+              Resume <ExternalLink size={20} />
+            </Button>
+            <Button 
+              onClick={() => { 
+                window.open('https://www.linkedin.com/in/nmaindoliya/', '_blank');
+              }}
+              hoverStyle={{
+                background: '#0a66c2',
+              }}
+            >
+              <LinkedinIcon size={20} />
+            </Button>
+            <Button 
+              onClick={() => {
+                window.open('https://github.com/ze-ntsh', '_blank');
+              }}
+              hoverStyle={{
+                background: '#24292e',
+              }}
+            >
+              <Github size={20} />
+            </Button>
           </div>
         </div>
       </div>
