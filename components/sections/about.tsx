@@ -55,7 +55,7 @@ export const About = () => {
             </Button>
             <Button
               onClick={() => {
-                // setRoute('resume');
+                window.open('/resume.pdf', '_blank');
               }}
               className="flex items-center gap-2"
             >
