@@ -23,12 +23,12 @@ export const About = () => {
 
           <div className='h-2/3 flex justify-center max-lg:justify-start max-lg:px-10'>
             <div className='w-full aspect-square bg-[rgba(255,255,255,0.8)]'
-              // style={{
-              //   backgroundImage: 'url(/images/nitish.png)',
-              //   backgroundSize: 'cover',
-              //   backgroundPosition: 'center',
-              //   backgroundRepeat: 'no-repeat',
-              // }}
+            // style={{
+            //   backgroundImage: 'url(/images/nitish.png)',
+            //   backgroundSize: 'cover',
+            //   backgroundPosition: 'center',
+            //   backgroundRepeat: 'no-repeat',
+            // }}
             >
               {/* PARTICLE PIC */}
             </div>
@@ -60,15 +60,12 @@ export const About = () => {
               Get in touch
             </Button>
             <Button
-              onClick={() => {}}
+              onClick={() => {
+                window.open('/resume.pdf', '_blank');
+              }}
+              className="flex gap-2"
             >
-              <a className="flex items-center gap-2"
-                href="/resume.pdf" 
-                target="_blank" 
-                rel="noreferrer"
-              >
-                Resume <ExternalLink size={20} />
-              </a>
+              Resume <ExternalLink size={20} />
             </Button>
             <Button
               onClick={() => {
