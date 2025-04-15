@@ -139,7 +139,7 @@ export const HeroSection = () => {
               }}
               animate={{
                 x: 0,
-                width: initalWidth,
+                width: initalWidth.current,
               }}
               transition={{
                 duration: 0.5,
