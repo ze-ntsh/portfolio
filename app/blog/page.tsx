@@ -1,6 +1,6 @@
 import { FileStructure } from "@/components/blog/FileStrucuture";
 
-export const BlogHome = () => {
+const BlogHome = () => {
   return (
     <>
       <div>Blog Home</div>
