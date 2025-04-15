@@ -1,22 +1,22 @@
 import { cn } from "@/lib/utils";
-import { motion } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 
 import { porterSansBlock } from '@/lib/fonts';
 import { cascadia } from "@/lib/fonts";
 
 import { useNavContext } from "@/components/context/nav-context";
 import { ExternalLink, Github, LinkedinIcon } from "lucide-react";
-import { Button } from "@/components/button";
+import { Button } from "@/components/ui/button";
 
 import { fileSystem } from "@/lib/file-system";
-import { useLayoutEffect, useMemo, useRef } from "react";
-import { ParticleSystem, TimelineObject, Config, Interactivity} from '@/lib/particlize';
+import { RefObject, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { ParticleSystem, TimelineObject, Config, Interactivity } from '@/lib/particlize';
 
 export const About = () => {
   const { setRoute } = useNavContext();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const timeline: TimelineObject[] = useMemo(() => ([  
+  const timeline: TimelineObject[] = useMemo(() => ([
     {
       type: 'image',
       content: '/images/nitish.webp',
@@ -40,23 +40,47 @@ export const About = () => {
     },
     hover: {
       mode: 'repulse',
-    } 
+    }
   }), []);
+
+  const particleSystem = useRef<ParticleSystem>();
+
+  const isInView = useInView(canvasRef, {
+    once: true,
+    amount: 0.3,
+  });
+
+  const isInMajorView = useInView(canvasRef, {
+    amount: 0.5,
+  });
 
   useLayoutEffect(() => {
     if (!canvasRef.current) return;
 
-    canvasRef.current.style.width ='100%';
-    canvasRef.current.style.height='100%';
+    canvasRef.current.style.width = '100%';
+    canvasRef.current.style.height = '100%';
     // ...then set the internal size to match
-    canvasRef.current.width  = canvasRef.current.offsetWidth;
+    canvasRef.current.width = canvasRef.current.offsetWidth;
     canvasRef.current.height = canvasRef.current.offsetHeight;
-    const system = new ParticleSystem(canvasRef.current as HTMLCanvasElement, timeline, interactivity);
-    system.init();
+    particleSystem.current = new ParticleSystem(canvasRef.current as HTMLCanvasElement, timeline, interactivity);
   }, [interactivity, timeline]);
 
+  useEffect(() => {
+    if (isInView) {
+      particleSystem?.current?.init();
+    } else {
+      // particleSystem?.current?.destroy();
+    }
+  }, [isInView])
+
+  useEffect(() => {
+    if (isInMajorView) {
+      setRoute('about');
+    }
+  }, [isInMajorView, setRoute])
+
   return (
-    <motion.section className='bg-[--background] absolute bottom-0 min-h-[100vh] lg:h-[100vh] pb-10 w-full snap'>
+    <motion.section className='bg-[--background] absolute bottom-0 min-h-[100vh] lg:h-[100vh] pb-10 w-full' data-route='about'>
       <div className='w-full h-full flex max-lg:flex-col'>
         <div className='w-2/5 h-full flex flex-col justify-evenly max-lg:w-full'>
           <div className={cn('text-[3.5em] text-[--text-primary] text-center max-lg:text-[2em] max-lg:py-5', porterSansBlock.className)}>

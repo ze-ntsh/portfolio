@@ -1,18 +1,29 @@
-import ParallaxText from "@/components/parallax-text";
-import { Cube } from "@/components/cube";
-import { useMemo } from "react";
-import { ContactForm } from "@/components/contact-form";
-import { motion } from "framer-motion";
+import ParallaxText from "@/components/ui/parallax-text";
+import { Cube } from "@/components/ui/cube";
+import { useMemo, useRef } from "react";
+import { ContactForm } from "@/components/home-sections/sub-components/contact-form";
+import { motion, useInView } from "framer-motion";
 import { useNavContext } from "@/components/context/nav-context";
 
 export const Contact = () => {
   const { setRoute } = useNavContext();
+  const contactRef = useRef(null);
+
+  const isInMajorView = useInView(contactRef, {
+    amount: 0.6,
+  });
+
+  useMemo(() => {
+    if (isInMajorView) {
+      setRoute('contact');
+    }
+  }, [isInMajorView, setRoute]);
 
   const cubes = useMemo(() => {
     return (
       <>
         {/* left-right */}
-        <div className="absolute top-0 h-full w-full overflow-hidden max-sm:hidden contact-section-scroll">
+        <div className="absolute top-0 h-full w-full overflow-hidden max-sm:hidden" data-route="contact">
           {Array.from({ length: 40 }).map((val, index) => {
             return <Cube key={index} className={`absolute`}
               size={Math.random() * 3 + 2}
@@ -86,6 +97,7 @@ export const Contact = () => {
         backgroundPosition: 'center',
         backgroundImage: 'linear-gradient(to right, grey 1px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px)'
       }}
+      ref={contactRef}
     >
       <div className="h-full flex flex-col">
         <div className="h-1/3 flex items-center text-[--text-primary] pt-10">

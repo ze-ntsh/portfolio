@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@/app/globals.css";
-import 'lenis/dist/lenis.css';
+import "lenis/dist/lenis.css";
 
-import { NavProvider } from '@/components/context/nav-context';
-import { InitProvider } from '@/components/context/init-context';
+import { NavProvider } from "@/components/context/nav-context";
+import { InitProvider } from "@/components/context/init-context";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,14 +13,14 @@ export const metadata: Metadata = {
   description: "Portfolio of Nitish Maindoliya",
   icons: [
     {
-      media: '(prefers-color-scheme: light)',
-      url: '/favicon-light.ico',
+      media: "(prefers-color-scheme: light)",
+      url: "/favicon-light.ico",
     },
     {
-      media: '(prefers-color-scheme: dark)',
-      url: '/favicon-dark.ico',
-    }
-  ]
+      media: "(prefers-color-scheme: dark)",
+      url: "/favicon-dark.ico",
+    },
+  ],
 };
 
 export default function RootLayout({

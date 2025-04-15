@@ -1,7 +1,7 @@
 import Image from "next/image";
-import { motion, useMotionValueEvent, useScroll } from "framer-motion";
+import { motion, useInView, useMotionValueEvent, useScroll } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import Typewriter from "./typewriter";
+import Typewriter from "../../ui/typewriter";
 import { cn } from "@/lib/utils";
 import { cascadia } from "@/lib/fonts";
 import { useLenis } from "lenis/react";
@@ -32,18 +32,11 @@ export const Project = ({
 	link = '',
 	timespan = 2024,
 }) => {
-
-	const [elementInView, setElementInView] = useState(false);
 	const [expanded, setExpanded] = useState(false);
-	const [galleryScrolled, setGalleryScrolled] = useState(false);
 
-	const scrollRef = useRef(null);
+	const projectRef = useRef(null);
 	const galleryScrollRef = useRef(null);
 	const scrollerContainerRef = useRef(null);
-
-	const { scrollY } = useScroll({
-		target: scrollRef,
-	});
 
 	const { scrollYProgress: galleryScrollYProgress } = useScroll({
 		target: galleryScrollRef,
@@ -60,31 +53,27 @@ export const Project = ({
 			// @ts-ignore
 			scrollerContainerRef.current.scrollLeft = value * scrollerContainerRef.current.scrollWidth;
 		}
-
-		if (value === 1) {
-			setGalleryScrolled(true);
-		} else {
-			setGalleryScrolled(false);
-		}
 	});
 
 	const yBeforeExpand = useRef(0);
-
 	const lenis = useLenis();
-
 	useEffect(() => {
 		if (expanded) {
-			yBeforeExpand.current = scrollY.get();
+			yBeforeExpand.current = lenis?.scroll as number;
 		} else {
 			lenis?.stop();
 			window.scrollTo(0, yBeforeExpand.current);
 			lenis?.start();
 		}
-	}, [expanded, scrollY, lenis]);
+	}, [expanded, lenis]);
+
+	const isInView = useInView(projectRef, {
+		once: true,
+	});
 
 	return (
 		<>
-			<div ref={scrollRef} className="z-0 relative max-sm:h-[100vh] bg-[--background] pt-5 max-sm:pt-10"
+			<div ref={projectRef} className="z-0 relative max-sm:h-[100vh] bg-[--background] pt-5 max-sm:pt-10"
 				style={{
 					position: expanded ? 'sticky' : 'relative',
 					top: expanded ? '3em' : 'auto',
@@ -94,17 +83,14 @@ export const Project = ({
 				{/* flex */}
 				<div className="flex flex-col h-[80%] max-sm:h-[95%]">
 					{/* information section */}
-					<motion.div layout className="flex max-sm:flex-col max-sm:h-full justify-evenly"
-						onViewportEnter={() => setElementInView(true)}
-						transition={{ duration: 0 }}
-					>
+					<div className="flex max-sm:flex-col max-sm:h-full justify-evenly">
 						<div className="w-1/4 max-sm:w-full max-sm:mb-5">
 							<div className="w-[60%] h-full max-sm:w-full text-right max-sm:text-center">
 								{/* typewriter animation */}
 								<span className={cn("text-[--text-primary] text-xl", cascadia.className)}>
 									/
 									<Typewriter
-										trigger={elementInView}
+										trigger={isInView}
 									>
 										{name.toLowerCase().replace(' ', '_')}
 									</Typewriter>
@@ -118,7 +104,7 @@ export const Project = ({
 						<div className="text-[--text-secondary] text-md w-1/2 max-sm:w-full max-sm:px-10">
 							<div className={cn("bg-[--foreground] text-[--text-inverse] mb-2 pl-2", cascadia.className)}>
 								<span>&gt;_ </span>
-								<Typewriter trigger={elementInView}>
+								<Typewriter trigger={isInView}>
 									cat info.txt
 								</Typewriter>
 							</div>
@@ -133,7 +119,7 @@ export const Project = ({
 												display: expanded ? 'none' : 'block',
 											}}
 											initial={{ opacity: 0 }}
-											animate={elementInView ? { opacity: 1 } : { opacity: 0 }}
+											animate={isInView ? { opacity: 1 } : { opacity: 0 }}
 											transition={{ duration: 0.3, delay: 0.6 + index * 0.3 }}
 										>
 											{desc}
@@ -153,7 +139,7 @@ export const Project = ({
 
 								<motion.div className="text-[--text-primary] items-center italic my-2"
 									initial={{ opacity: 0 }}
-									animate={elementInView ? { opacity: 1 } : { opacity: 0 }}
+									animate={isInView ? { opacity: 1 } : { opacity: 0 }}
 									transition={{ duration: 0.3, delay: 0.6 + description.length * 0.3 }}
 								>
 									<span className="font-bold">Tech used: </span>
@@ -185,7 +171,7 @@ export const Project = ({
 								</motion.div>
 							</div>
 						</div>
-					</motion.div>
+					</div>
 
 					{/* image section */}
 					{expanded &&
